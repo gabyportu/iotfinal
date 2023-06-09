@@ -1,0 +1,257 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <!-- Incluye Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Incluye Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+  <!-- Tus estilos CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+    <body onload="getData()">
+        <nav class="navbar navbar-expand-lg navbar-light custom-bg">
+          <a class="navbar-brand" href="login.html">
+              <img src="https://i.ibb.co/YRPXKDz/acgg.png" alt="Logo Empresa" style="max-height: 40px; margin-right: 10px; margin-left: 15px;">IOT
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav"style=" margin-right: 40px;"">
+              <ul class="navbar-nav ms-auto">
+                  <li class="nav-item active">
+                        <a class="nav-link" href="home.html">Encendido</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="temperature.html">Temperatura y Humedad</a>
+                      </li>
+                      
+                      
+                      
+                    </ul>
+          </div>
+        </nav><br>
+        
+          <div class="container">
+              <div class="row">
+                <div class="col d-flex align-items-center justify-content-center">
+                  <img
+                  class="subtitulo fade-in"
+                  class="logo-ucb"
+                  src="https://www.ucb.edu.bo/wp-content/uploads/2019/11/ucb-logo.png"
+                />
+                </div>
+                <div class="col d-flex align-items-center justify-content-center">
+                  <div>
+                      <h2  class="subtitulo fade-in">Casa Domotica - ACG</h2>
+                  </div>
+                  
+                  
+                </div>
+                
+                <div class="col-lg-3 col-md-12 col-12"class="logo slide-in">
+                  <div class="header text-center"  class="logo slide-in">
+                      <p class="fs-5" id="hora" class="logo slide-in"></p>
+                      <p class="fs-5" id="fecha"class="logo slide-in"></p>
+                      <center>
+                          <div class="subtitulo fade-in"class="display-4 swing" >
+                              <div id="TT_yyJEk1kk1AhBfasAVfqjzDDjzWnALffFbtEdksCIqkD5mom5G" >El tiempo - Tutiempo.net</div>
+                              <script type="text/javascript" src="https://www.tutiempo.net/s-widget/l_yyJEk1kk1AhBfasAVfqjzDDjzWnALffFbtEdksCIqkD5mom5G"></script>
+                          </div>
+                      </center>
+                  </div>
+              </div>
+          </div>
+          <br><br><br>
+          <center>
+            <h2  class="subtitulo fade-in">Control de Temperatura</h2>
+            <p id="temperature"></p>
+    <input type="range" id="temperature" min="0" max="40" onchange="setTemperature()"/>
+    <canvas id="myChart" style="width:100%; max-width:600px"></canvas>
+
+      
+          </center>
+          <!--humedad-->
+          <center>
+            <h2  class="subtitulo fade-in">Control de humedad</h2>
+            <p id="humidity"></p>
+            <canvas id="humidityChart" style="width:100%; max-width:600px"></canvas>
+
+          </center>
+          <center>
+            <div style='width: 90%; margin-top: 50px;transition: 1s;' class='ampliacion'>
+                <table style='font-size: 20px;width:100%; background-color:#ffffff; text-align: center; border-collapse: collapse;border-right: solid 1px #5641a3; border-left:solid 1px #164275; border-bottom: solid 1px #164275;' class="color-change">
+                    <thead style='background-color: #30475E; color: white; border-bottom: solid 5px #071b33;'>
+                        <tr><th style=' padding: 20px;'>IP Local</th><th style=' padding: 20px; '>SSID</th><th style=' padding: 20px; '>PSK</th><th style=' padding: 20px; '>MAC</th></tr>
+                    </thead>
+                    <tr>
+                        <p> </p> 
+                        <td style='padding: 20px;text-align: center;'class='changecolor'>
+                            <p>%IP% </p> 
+                        </td>
+                        <td style='padding: 20px;text-align: center;'class='changecolor'>
+                            <p>%SSID%</p>
+                        </td>
+                        <td style='padding: 20px;text-align: center;'class='changecolor'>
+                            <p>%PSK% </p>
+                        </td>
+                        <td style='padding: 20px;text-align: center;'class='changecolor'>
+                            <p>%MAC%</p>
+                        </td>
+                        
+                    </tr>
+                </table>
+            </div>
+            </center>
+            <br><br><br>
+      
+      
+      
+          <footer class="bg-dark p-2 text-center">
+              <div class="container">
+                  <div class="row">
+                      <!-- Programador 1 -->
+                      <div class="col-lg-4 col-md-12 col-12">
+                          <br>
+                          <div class="header text-center">
+                              <img src="https://lh3.googleusercontent.com/a/AGNmyxb5V6WLfiRQEJ2WKGnWem4lUg_bxiyEeUHEpC8a=s96-c-rg-br100" height="50px" alt="Responsive image"class="zoom-in">
+                          </div>
+                          <div class="header text-start">
+                              <br>
+                              <h4 class="text-white">Información del Desarrollador 1:</h4>
+                              <br>
+                              <p class="text-white">Alberto Encinas Montaño</p>
+                              <p class="text-white">alberto.encinas@ucb.edu.bo</p>
+                              <p class="text-white">(+591) 71576448</p>
+                          </div>
+                      </div>
+                      <!-- Programador 2 -->
+                      <div class="col-lg-4 col-md-12 col-12">
+                          <br>
+                          <div class="header text-center">
+                              <img src="https://lh3.googleusercontent.com/a-/ACB-R5SROFnbrjU0W_dtpPDt7Z8Y6DHZ9C7vErZN4OAs=s48-p" height="50px" alt="Responsive image" style="border-radius: 50%;"class="zoom-in">
+                          </div>
+                          <div class="header text-start">
+                              <br>
+                              <h4 class="text-white">Información del Desarrollador 2:</h4>
+                              <br>
+                              <p class="text-white">Carla Camila Negron Vargas</p>
+                              <p class="text-white">Carla.negron@ucb.edu.bo</p>
+                              <p class="text-white">(+591) 74006951</p>
+                          </div>
+                      </div>
+                      <!-- Programador 3 -->
+                      <div class="col-lg-4 col-md-12 col-12">
+                          <br>
+                          <div class="header text-center">
+                              <img src="https://lh3.googleusercontent.com/a-/ACB-R5QPSQtGLGqaF5BQT8NuJmuu-1S5_M1dzw9A9gSs=s48-p" height="50px" alt="Responsive image" style="border-radius: 50%;"class="zoom-in">
+                          </div>
+                          <div class="header text-start">
+                              <br>
+                              <h4 class="text-white">Información del Desarrollador 3:</h4>
+                              <br>
+                              <p class="text-white">Gabriela Nataly Portugal Escalante</p>
+                              <p class="text-white">gabriela.protugal@ucb.edu.bo</p>
+                              <p class="text-white">(+591) 67039081</p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </footer>
+  
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAI5AE_Wl8cbj7teLhCHwAJTQ4EaB1XUco",
+      authDomain: "iot-proyecto-final-be8fa.firebaseapp.com",
+      projectId: "iot-proyecto-final-be8fa",
+      storageBucket: "iot-proyecto-final-be8fa.appspot.com",
+      messagingSenderId: "963323039787",
+      appId: "1:963323039787:web:0e296e1957431e08621a6e",
+      measurementId: "G-XGX6LC2TT8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Verifica si el usuario está autenticado
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          data: [],
+          backgroundColor: 'rgba(0, 123, 255, 0.5)'
+        }]
+      }
+    });
+
+    function setTemperature() {
+      const temperature = document.getElementById("temperature").value;
+      const temperatureRef = db.ref("/temperature");
+
+      temperatureRef.set(temperature).then(() => {
+        myChart.data.labels.push(new Date().toLocaleTimeString());
+        myChart.data.datasets[0].data.push(temperature);
+        myChart.update();
+      });
+    }
+
+    const temperatureRef = db.ref("/temperature");
+
+    temperatureRef.on('value', function(snapshot) {
+      myChart.data.labels.push(new Date().toLocaleTimeString());
+      myChart.data.datasets[0].data.push(snapshot.val());
+      myChart.update();
+    });
+    var humidityCtx = document.getElementById('humidityChart').getContext('2d');
+
+var humidityChart = new Chart(humidityCtx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [{
+      data: [],
+      backgroundColor: 'rgba(0, 123, 255, 0.5)'
+    }]
+  }
+});
+
+const humidityRef = db.ref("/humidity");
+
+humidityRef.on('value', function(snapshot) {
+  humidityChart.data.labels.push(new Date().toLocaleTimeString());
+  humidityChart.data.datasets[0].data.push(snapshot.val());
+  humidityChart.update();
+});
+
+
+  temperatureRef.on("value", (snapshot) => {
+    const temperature = snapshot.val();
+    document.getElementById("temperature").innerText = `Temperatura: ${temperature}°C`;
+  });
+
+  humidityRef.on("value", (snapshot) => {
+    const humidity = snapshot.val();
+    document.getElementById("humidity").innerText = `Humedad: ${humidity}%`;
+  });
+
+  </script>
+</body>
+</html>

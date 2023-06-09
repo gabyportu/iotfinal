@@ -1,0 +1,45 @@
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+
+<script>
+  // Tus credenciales de Firebase aquí
+  const firebaseConfig = {
+  apiKey: "AIzaSyAI5AE_Wl8cbj7teLhCHwAJTQ4EaB1XUco",
+  authDomain: "iot-proyecto-final-be8fa.firebaseapp.com",
+  projectId: "iot-proyecto-final-be8fa",
+  storageBucket: "iot-proyecto-final-be8fa.appspot.com",
+  messagingSenderId: "963323039787",
+  appId: "1:963323039787:web:0e296e1957431e08621a6e",
+  measurementId: "G-XGX6LC2TT8"
+};
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  // Verifica si el usuario está autenticado
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      // Redirige a la página de inicio de sesión si el usuario no está autenticado
+      window.location.href = "login.html";
+    }
+  });
+
+  const temperatureRef = db.ref("/temperature");
+  const humidityRef = db.ref("/humidity");
+
+  temperatureRef.on("value", (snapshot) => {
+    const temperature = snapshot.val();
+    document.getElementById("temperature").innerText = `Temperatura: ${temperature}°C`;
+  });
+
+  humidityRef.on("value", (snapshot) => {
+    const humidity = snapshot.val();
+    document.getElementById("humidity").innerText = `Humedad: ${humidity}%`;
+  });
+</script>
+
+<p id="temperature"></p>
+<p id="humidity"></p>

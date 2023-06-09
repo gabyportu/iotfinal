@@ -1,0 +1,254 @@
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+
+<script>
+  // Tus credenciales de Firebase aquí
+  const firebaseConfig = {
+  apiKey: "AIzaSyAI5AE_Wl8cbj7teLhCHwAJTQ4EaB1XUco",
+  authDomain: "iot-proyecto-final-be8fa.firebaseapp.com",
+  projectId: "iot-proyecto-final-be8fa",
+  storageBucket: "iot-proyecto-final-be8fa.appspot.com",
+  messagingSenderId: "963323039787",
+  appId: "1:963323039787:web:0e296e1957431e08621a6e",
+  measurementId: "G-XGX6LC2TT8"
+};
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  // Verifica si el usuario está autenticado
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      // Redirige a la página de inicio de sesión si el usuario no está autenticado
+      window.location.href = "login.html";
+    }
+  });
+
+  function toggleLamp(imageId) {
+    const lampImage = document.getElementById(imageId);
+    const lampStateRef = db.ref("/lamp/" + imageId + "/state");
+    var xhttp = new XMLHttpRequest();
+    let onImage, offImage;
+
+    switch(imageId) {
+        case "lampImage1":
+            onImage = "https://i.ibb.co/hgzWtBg/3d-casual-life-interior-armchair-plant.png";
+            offImage = "https://i.ibb.co/7NsskD9/xd.png";
+            xhttp.open("PUT", "/TURNC1?PAGE="+val+"&VALUE="+stateButton, true);
+            xhttp.send(); 
+            break;
+        case "lampImage2":
+            onImage = "https://i.ibb.co/tL2M6z6/casual-life-3d-kitchen-interior-with-plant-lamp-table-chair-bucket-and-teaset.png";
+            offImage = "https://i.ibb.co/7NsskD9/xd.png";        
+            xhttp.open("PUT", "/TURNC2?PAGE="+val+"&VALUE="+stateButton, true);
+            xhttp.send(); 
+            break;
+        case "lampImage3":
+            onImage = "https://i.ibb.co/9W0LCyN/casual-life-3d-interior-set-with-armchair-bookcase-and-floor-lamp-1.png";
+            offImage = "https://i.ibb.co/7NsskD9/xd.png";
+            xhttp.open("PUT", "/TURNC3?PAGE="+val+"&VALUE="+stateButton, true);
+            xhttp.send(); 
+            break;
+        case "lampImage4":
+            onImage = "https://i.ibb.co/7GNG81P/casual-life-3d-living-room-interior-set-with-couch.png";
+            offImage = "https://i.ibb.co/7NsskD9/xd.png";
+            xhttp.open("PUT", "/TURNC4?PAGE="+val+"&VALUE="+stateButton, true);
+            xhttp.send(); 
+            break;
+        default:
+            console.error("Unknown imageId: " + imageId);
+            return;
+    }
+
+    lampStateRef.once("value").then((snapshot) => {
+      const currentState = snapshot.val();
+
+      if (currentState === "off") {
+        lampStateRef.set("on");
+        lampImage.src = onImage;
+      } else {
+        lampStateRef.set("off");
+        lampImage.src = offImage;
+      }
+    });
+
+  }
+</script>
+
+<html>
+    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <title>Lámpara</title>
+</head>
+<body onload="getData()">
+  <nav class="navbar navbar-expand-lg navbar-light custom-bg">
+    <a class="navbar-brand" href="login.html">
+        <img src="https://i.ibb.co/YRPXKDz/acgg.png" alt="Logo Empresa" style="max-height: 40px; margin-right: 10px; margin-left: 15px;">IOT
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav"style=" margin-right: 40px;"">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item active">
+                  <a class="nav-link" href="home.html">Encendido</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="temperature.html">Temperatura</a>
+                </li>
+                
+                
+                
+              </ul>
+    </div>
+  </nav><br>
+  
+    <div class="container">
+        <div class="row">
+          <div class="col d-flex align-items-center justify-content-center">
+            <img
+            class="subtitulo fade-in"
+            class="logo-ucb"
+            src="https://www.ucb.edu.bo/wp-content/uploads/2019/11/ucb-logo.png"
+          />
+          </div>
+          <div class="col d-flex align-items-center justify-content-center">
+            <div>
+                <h2  class="subtitulo fade-in">Casa Domotica - ACG</h2>
+            </div>
+            
+            
+          </div>
+          
+          <div class="col-lg-3 col-md-12 col-12"class="logo slide-in">
+            <div class="header text-center"  class="logo slide-in">
+                <p class="fs-5" id="hora" class="logo slide-in"></p>
+                <p class="fs-5" id="fecha"class="logo slide-in"></p>
+                <center>
+                    <div class="subtitulo fade-in"class="display-4 swing" >
+                        <div id="TT_yyJEk1kk1AhBfasAVfqjzDDjzWnALffFbtEdksCIqkD5mom5G" >El tiempo - Tutiempo.net</div>
+                        <script type="text/javascript" src="https://www.tutiempo.net/s-widget/l_yyJEk1kk1AhBfasAVfqjzDDjzWnALffFbtEdksCIqkD5mom5G"></script>
+                    </div>
+                </center>
+            </div>
+        </div>
+    </div>
+    <br><br><br>
+    <center>
+        <!-- Agrega esto en la parte del body de tu HTML -->
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <img id="lampImage1" src="https://i.ibb.co/hgzWtBg/3d-casual-life-interior-armchair-plant.png" onclick="toggleLamp('lampImage1')">
+        </div>
+        <div class="col">
+            <img id="lampImage2" src="https://i.ibb.co/tL2M6z6/casual-life-3d-kitchen-interior-with-plant-lamp-table-chair-bucket-and-teaset.png" onclick="toggleLamp('lampImage2')">
+        </div>
+        <div class="col">
+            <img id="lampImage3" src="https://i.ibb.co/9W0LCyN/casual-life-3d-interior-set-with-armchair-bookcase-and-floor-lamp-1.png" onclick="toggleLamp('lampImage3')">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-center">
+            <img id="lampImage4" src="https://i.ibb.co/7GNG81P/casual-life-3d-living-room-interior-set-with-couch.png" onclick="toggleLamp('lampImage4')">
+        </div>
+    </div>
+</div>
+
+    </center>
+    <center>
+      <div style='width: 90%; margin-top: 50px;transition: 1s;' class='ampliacion'>
+          <table style='font-size: 20px;width:100%; background-color:#ffffff; text-align: center; border-collapse: collapse;border-right: solid 1px #5641a3; border-left:solid 1px #164275; border-bottom: solid 1px #164275;' class="color-change">
+              <thead style='background-color: #30475E; color: white; border-bottom: solid 5px #071b33;'>
+                  <tr><th style=' padding: 20px;'>IP Local</th><th style=' padding: 20px; '>SSID</th><th style=' padding: 20px; '>PSK</th><th style=' padding: 20px; '>MAC</th></tr>
+              </thead>
+              <tr>
+                  <p> </p> 
+                  <td style='padding: 20px;text-align: center;'class='changecolor'>
+                      <p>%IP% </p> 
+                  </td>
+                  <td style='padding: 20px;text-align: center;'class='changecolor'>
+                      <p>%SSID%</p>
+                  </td>
+                  <td style='padding: 20px;text-align: center;'class='changecolor'>
+                      <p>%PSK% </p>
+                  </td>
+                  <td style='padding: 20px;text-align: center;'class='changecolor'>
+                      <p>%MAC%</p>
+                  </td>
+                  
+              </tr>
+          </table>
+      </div>
+      </center>
+      <br><br><br>
+
+
+
+    <footer class="bg-dark p-2 text-center">
+        <div class="container">
+            <div class="row">
+                <!-- Programador 1 -->
+                <div class="col-lg-4 col-md-12 col-12">
+                    <br>
+                    <div class="header text-center">
+                        <img src="https://lh3.googleusercontent.com/a/AGNmyxb5V6WLfiRQEJ2WKGnWem4lUg_bxiyEeUHEpC8a=s96-c-rg-br100" height="50px" alt="Responsive image"class="zoom-in">
+                    </div>
+                    <div class="header text-start">
+                        <br>
+                        <h4 class="text-white">Información del Desarrollador 1:</h4>
+                        <br>
+                        <p class="text-white">Alberto Encinas Montaño</p>
+                        <p class="text-white">alberto.encinas@ucb.edu.bo</p>
+                        <p class="text-white">(+591) 71576448</p>
+                    </div>
+                </div>
+                <!-- Programador 2 -->
+                <div class="col-lg-4 col-md-12 col-12">
+                    <br>
+                    <div class="header text-center">
+                        <img src="https://lh3.googleusercontent.com/a-/ACB-R5SROFnbrjU0W_dtpPDt7Z8Y6DHZ9C7vErZN4OAs=s48-p" height="50px" alt="Responsive image" style="border-radius: 50%;"class="zoom-in">
+                    </div>
+                    <div class="header text-start">
+                        <br>
+                        <h4 class="text-white">Información del Desarrollador 2:</h4>
+                        <br>
+                        <p class="text-white">Carla Camila Negron Vargas</p>
+                        <p class="text-white">Carla.negron@ucb.edu.bo</p>
+                        <p class="text-white">(+591) 74006951</p>
+                    </div>
+                </div>
+                <!-- Programador 3 -->
+                <div class="col-lg-4 col-md-12 col-12">
+                    <br>
+                    <div class="header text-center">
+                        <img src="https://lh3.googleusercontent.com/a-/ACB-R5QPSQtGLGqaF5BQT8NuJmuu-1S5_M1dzw9A9gSs=s48-p" height="50px" alt="Responsive image" style="border-radius: 50%;"class="zoom-in">
+                    </div>
+                    <div class="header text-start">
+                        <br>
+                        <h4 class="text-white">Información del Desarrollador 3:</h4>
+                        <br>
+                        <p class="text-white">Gabriela Nataly Portugal Escalante</p>
+                        <p class="text-white">gabriela.protugal@ucb.edu.bo</p>
+                        <p class="text-white">(+591) 67039081</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
+
