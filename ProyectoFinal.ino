@@ -1,8 +1,6 @@
        #include <Arduino.h>
 #include <ESP32Servo.h>
-#include <CTBot.h>
 #include <HTTPClient.h>
-#include <Espalexa.h>
 #include <ESPAsyncWebServer.h>
 #include <Arduino_JSON.h>
 #include <RTClib.h>
@@ -43,12 +41,10 @@ const char* password =  "Lpv2452911";
 
 String databaseSecret = "dHw9FVXZOBHgMdy0TlBTmsvjp1WlQrV757IME30u";
 
-CTBot miBot;
 FirebaseData fbdo;
 FirebaseJson json;
 FirebaseAuth auth;
 FirebaseConfig config;
-Espalexa alexita;
     
 AsyncWebServer server(80);
 AsyncEventSource events("/events");
@@ -99,13 +95,6 @@ String s_bssid = "";
 
 float tempC = dht_sensor.readTemperature();
 float humi = dht_sensor.readHumidity();
-
-
-void cuartoUno(uint8_t brightness);
-void cuartoDos(uint8_t brightness);
-void cuartoTres(uint8_t brightness);
-void cuartoSala(uint8_t brightness);
-void cuartoVenti(uint8_t brightness);
 
 JSONVar readings;
 
@@ -240,16 +229,6 @@ void setup() {
     Serial.println("Firebase not connected");
   }
 
-  alexita.addDevice("Foco uno", cuartoUno);
-  alexita.addDevice("Foco dos", cuartoDos);
-  alexita.addDevice("Foco tres", cuartoTres);
-  alexita.addDevice("Foco Sala",cuartoSala);
-  alexita.begin();
-
-  miBot.wifiConnect(WIFI_SSID, WIFI_PASSWORD);
-  miBot.setTelegramToken(toke);
-  // Cambia "my-esp32-app" por el nombre de tu aplicación
-
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request){
     page = 0;
     request-> send(SPIFFS, "/login.html", String(), false, automatico);
@@ -376,14 +355,13 @@ void setup() {
 
 void loop() {
 
-  alexita.loop();
-
   if (Firebase.ready()) {
     Firebase.getString(fbdo, "/estadoFoco1");
     if (fbdo.stringData() == "1") {
       Firebase.setString(fbdo, "/estadoFoco1", "1");
       estadoFoco1 = HIGH;
     } else if (fbdo.stringData() == "0") {
+      Firebase.setString(fbdo, "/estadoFoco1", "0");
       estadoFoco1 = LOW;
     }
     digitalWrite(ledRC1, !estadoFoco1);
@@ -391,8 +369,10 @@ void loop() {
 
     Firebase.getString(fbdo, "/estadoFoco2");
     if (fbdo.stringData() == "1") {
+      Firebase.setString(fbdo, "/estadoFoco2", "1");
       estadoFoco2 = HIGH;
     } else if (fbdo.stringData() == "0") {
+      Firebase.setString(fbdo, "/estadoFoco2", "0");
       estadoFoco2 = LOW;
     }
     digitalWrite(ledRC2, !estadoFoco2);
@@ -400,8 +380,10 @@ void loop() {
 
     Firebase.getString(fbdo, "/estadoFoco3");
     if (fbdo.stringData() == "1") {
+      Firebase.setString(fbdo, "/estadoFoco3", "1");
       estadoFoco3 = HIGH;
     } else if (fbdo.stringData() == "0") {
+      Firebase.setString(fbdo, "/estadoFoco13", "0");
       estadoFoco3 = LOW;
     }
     digitalWrite(ledRC3, !estadoFoco3);
@@ -409,8 +391,10 @@ void loop() {
 
     Firebase.getString(fbdo, "/estadoFocoSala");
     if (fbdo.stringData() == "1") {
+      Firebase.setString(fbdo, "/estadoFocoSala", "1");
       estadoFocoSala = HIGH;
     } else if (fbdo.stringData() == "0") {
+      Firebase.setString(fbdo, "/estadoFocoSala", "0");
       estadoFocoSala = LOW;
     }
     digitalWrite(ledRSA, !estadoFocoSala);
@@ -441,63 +425,4 @@ void loop() {
   }
 
   delay(5000);
-}
-void cuartoUno(uint8_t brightness) {
-  if (brightness) {
-    digitalWrite(ledGC1, HIGH);
-    digitalWrite(ledRC1, LOW);
-    Serial.println("Encendido");
-  }else{
-    digitalWrite(ledGC1, LOW);
-    digitalWrite(ledRC1, HIGH);
-    Serial.println("Apagado");
-  }
-}
-
-void cuartoDos(uint8_t brightness) {
-  if (brightness) {
-    digitalWrite(ledGC2, HIGH);
-    digitalWrite(ledRC2, LOW);
-    Serial.println("Encendido");
-  }else{
-    digitalWrite(ledGC2, LOW);
-    digitalWrite(ledRC2, HIGH);
-    Serial.println("Apagado");
-  }
-}
-
-void cuartoTres(uint8_t brightness) {
-  if (brightness) {
-    digitalWrite(ledGC3, HIGH);
-    digitalWrite(ledRC3, LOW);
-    Serial.println("Encendido");
-  }else{
-    digitalWrite(ledGC3, LOW);
-    digitalWrite(ledRC3, HIGH);
-    Serial.println("Apagado");
-  }
-}
-
-
-void cuartoSala(uint8_t brightness) {
-  if (brightness) {
-    digitalWrite(ledGSA, HIGH);
-    digitalWrite(ledRSA, LOW);
-    Serial.println("Encendido");
-  }else{
-    digitalWrite(ledGSA, LOW);
-    digitalWrite(ledRSA, HIGH);
-    Serial.println("Apagado");
-  }
-}
-
-
-void cuartoVenti(uint8_t brightness) {
-  if (brightness) {
-    digitalWrite(ventilador1, HIGH);
-    Serial.println("Encendido");
-  }else{
-    digitalWrite(ventilador1, LOW);
-    Serial.println("Apagado");
-  }
 }
