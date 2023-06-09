@@ -5,16 +5,16 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from io import BytesIO
 from tkinter import ttk
 import requests
-import mysql.connector
-#import pyrebase
+import firebase_admin
+from firebase_admin import credentials, db
 
 
-mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="casa_iot"
-)
+cred = credentials.Certificate("credentials/iot-proyecto-final-be8fa-firebase-adminsdk-olx16-8ad4f5efc5.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://iot-proyecto-final-be8fa-default-rtdb.firebaseio.com/'
+#tienen que descargar las credenciales desde cfierbase y poner la ruta de archivo en credentials.
+})
+
 
 def load_image_from_url(url, size):
     response = requests.get(url)
@@ -22,9 +22,9 @@ def load_image_from_url(url, size):
     img = img.resize(size, Image.ANTIALIAS)
     return ImageTk.PhotoImage(img)
 
+
 def show_programmers():
     global root
-    #root.destroy()
     root = tk.Tk()
 
     frame0 = tk.Frame(root)
@@ -64,14 +64,8 @@ def show_programmers():
 
     label4 = tk.Label(frame2, image=image4)
     label4.pack(side=tk.TOP, padx=10)
-
-    show_graph_button = tk.Button(frame2, text="Mostrar gráfica", command=show_graph)
-    show_graph_button.pack(side=tk.TOP, pady=10)
-    show_table_button = tk.Button(frame1, text="Tabla", command=show_table)
-    show_table_button.pack(side=tk.LEFT, padx=10)
-    show_energy_info_button = tk.Button(frame2, text="Mostrar información de consumo energético",
-                                        command=show_energy_info)
-    show_energy_info_button.pack(side=tk.TOP, pady=10)
+    button = tk.Button(root, text="Mostrar gráficas", command=show_graph)
+    button.pack()
 
     root.mainloop()
 
@@ -85,105 +79,45 @@ def show_graph():
         root.rowconfigure(i, weight=1, minsize=300)
         root.columnconfigure(i, weight=1, minsize=300)
 
-        for j in range(2):
-            frame = tk.Frame(
-                master=root,
-                relief=tk.RAISED,
-                borderwidth=1
-            )
-            frame.grid(row=i, column=j, padx=10, pady=10)
+    for j in range(2):
+        frame = tk.Frame(
+            master=root,
+            relief=tk.RAISED,
+            borderwidth=1
+        )
+        frame.grid(row=i, column=j, padx=10, pady=10)
 
-            # Obtener los datos de la tabla TablaHorno
-            mycursor = mydb.cursor()
-            mycursor.execute("SELECT hora, focosala, Enfriador, Set_Point, SensorLM35 FROM tablahorno")
-            result = mycursor.fetchall()
+        # Obtener los datos de la tabla TablaHorno desde Firebase
+        ref = db.reference('xd')
+        result = ref.get()
 
-            # Crear una gráfica de ejemplo
-            fig, ax = plt.subplots()
-            for row in result:
-                hora = row[0]
-                focosala = row[1]
-                enfriador = row[2]
-                set_point = row[3]
-                sensor_lm35 = row[4]
-                ax.plot(hora, focosala, label='focosala')
-                ax.plot(hora, enfriador, label='Enfriador')
-                ax.plot(hora, set_point, label='Set Point')
-                ax.plot(hora, sensor_lm35, label='Sensor LM35')
+        # Crear una gráfica de ejemplo
+        fig, ax = plt.subplots()
+        for key, value in result.items():
+            hora = value['hora']
+            focosala = value['focosala']
+            enfriador = value['enfriador']
+            set_point = value['set_point']
+            sensor_lm35 = value['sensor_lm35']
+            ax.plot(hora, focosala, label='focosala')
+            ax.plot(hora, enfriador, label='Enfriador')
+            ax.plot(hora, set_point, label='Set Point')
+            ax.plot(hora, sensor_lm35, label='Sensor LM35')
 
-            ax.legend()
-            ax.set_xlabel('Hora Actual')
-            ax.set_ylabel('Datos')
-            canvas = FigureCanvasTkAgg(fig, master=frame)
-            canvas.draw()
-            canvas.get_tk_widget().pack()
-
-    root.mainloop()
-
-def show_table():
-    global root
-    root.destroy()
-    root = tk.Tk()
-
-    frame = tk.Frame(root)
-    frame.pack(side=tk.TOP, pady=10)
-
-    mycursor = mydb.cursor()
-    mycursor.execute("SELECT * FROM tablahorno")
-    result = mycursor.fetchall()
-
-    table_label = tk.Label(frame, text="Valores de la tabla TablaHorno", font=("Arial", 16))
-    table_label.pack()
-
-    cols = ('idcasa', 'fococ1', 'fococ2', 'fococ3', 'focosala', 'ventilador', 'humedad', 'temperatura', 'fecha', 'hora')
-    listBox = ttk.Treeview(frame, columns=cols, show='headings')
-
-    for col in cols:
-        listBox.heading(col, text=col)
-
-    for row in result:
-        listBox.insert("", "end", values=row)
-
-    listBox.pack()
-
-    show_programmers_button = tk.Button(frame, text="Volver a programadores", command=show_programmers)
-    show_programmers_button.pack(side=tk.TOP, pady=10)
+        ax.legend()
+        ax.set_xlabel('Hora Actual')
+        ax.set_ylabel('Datos')
+        canvas = FigureCanvasTkAgg(fig, master=frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack()
 
     root.mainloop()
 
-def show_energy_info():
-    # Crear la ventana principal
-    root = tk.Tk()
 
-    # Crear una cuadrícula de 2x2
-    root.geometry("800x600")
-    for i in range(2):
-        root.rowconfigure(i, weight=1, minsize=300)
-        root.columnconfigure(i, weight=1, minsize=300)
+def main():
+    show_programmers()
+    show_graph()
 
-        for j in range(2):
-            frame = tk.Frame(
-                master=root,
-                relief=tk.RAISED,
-                borderwidth=1
-            )
-            frame.grid(row=i, column=j, padx=10, pady=10)
 
-            # Obtener los datos de la tabla TablaHorno
-            mycursor = mydb.cursor()
-            mycursor.execute("SELECT hora, focosala, ventilador, humedad, temperatura FROM funcionamiento")
-            result = mycursor.fetchall()
-
-            # Calcular la información de consumo energético
-            total_energy = 0
-            for row in result:
-                calefactor = row[1]
-                enfriador = row[2]
-                total_energy += sum(calefactor) + sum(enfriador)
-
-            info_label = tk.Label(frame, text=f"Consumo energético total: {total_energy} kWh", font=("Arial", 16))
-            info_label.pack()
-
-    root.mainloop()
-
-show_programmers()
+if __name__ == "__main__":
+    main()
