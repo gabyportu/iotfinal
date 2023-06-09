@@ -13,7 +13,7 @@ mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
-    database="practica8db"
+    database="casa_iot"
 )
 
 def load_image_from_url(url, size):
@@ -95,21 +95,21 @@ def show_graph():
 
             # Obtener los datos de la tabla TablaHorno
             mycursor = mydb.cursor()
-            mycursor.execute("SELECT HoraActual, Calefactor, Enfriador, Set_Point, SensorLM35 FROM tablahorno")
+            mycursor.execute("SELECT hora, focosala, Enfriador, Set_Point, SensorLM35 FROM tablahorno")
             result = mycursor.fetchall()
 
             # Crear una gráfica de ejemplo
             fig, ax = plt.subplots()
             for row in result:
-                hora_actual = row[0]
-                calefactor = row[1]
+                hora = row[0]
+                focosala = row[1]
                 enfriador = row[2]
                 set_point = row[3]
                 sensor_lm35 = row[4]
-                ax.plot(hora_actual, calefactor, label='Calefactor')
-                ax.plot(hora_actual, enfriador, label='Enfriador')
-                ax.plot(hora_actual, set_point, label='Set Point')
-                ax.plot(hora_actual, sensor_lm35, label='Sensor LM35')
+                ax.plot(hora, focosala, label='focosala')
+                ax.plot(hora, enfriador, label='Enfriador')
+                ax.plot(hora, set_point, label='Set Point')
+                ax.plot(hora, sensor_lm35, label='Sensor LM35')
 
             ax.legend()
             ax.set_xlabel('Hora Actual')
@@ -135,7 +135,7 @@ def show_table():
     table_label = tk.Label(frame, text="Valores de la tabla TablaHorno", font=("Arial", 16))
     table_label.pack()
 
-    cols = ('NumReg', 'Horno_Id', 'Zona', 'Fecha', 'HoraActual', 'Calefactor', 'Enfriador', 'Set_Point', 'TempProceso', 'SensorLM35')
+    cols = ('idcasa', 'fococ1', 'fococ2', 'fococ3', 'focosala', 'ventilador', 'humedad', 'temperatura', 'fecha', 'hora')
     listBox = ttk.Treeview(frame, columns=cols, show='headings')
 
     for col in cols:
@@ -171,7 +171,7 @@ def show_energy_info():
 
             # Obtener los datos de la tabla TablaHorno
             mycursor = mydb.cursor()
-            mycursor.execute("SELECT HoraActual, Calefactor, Enfriador, Set_Point, SensorLM35 FROM tablahorno")
+            mycursor.execute("SELECT hora, focosala, ventilador, humedad, temperatura FROM funcionamiento")
             result = mycursor.fetchall()
 
             # Calcular la información de consumo energético
