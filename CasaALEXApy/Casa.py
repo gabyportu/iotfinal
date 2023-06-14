@@ -6,10 +6,11 @@ from io import BytesIO
 from tkinter import ttk
 import requests
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials
+from firebase_admin import db
 
 
-cred = credentials.Certificate("credentials/iot-proyecto-final-be8fa-firebase-adminsdk-olx16-8ad4f5efc5.json")
+cred = credentials.Certificate("credentials/iot-proyecto-final-be8fa-firebase-adminsdk-olx16-74669c93a5.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://iot-proyecto-final-be8fa-default-rtdb.firebaseio.com/'
 #tienen que descargar las credenciales desde cfierbase y poner la ruta de archivo en credentials.
